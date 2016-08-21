@@ -1,0 +1,104 @@
+﻿@model MyContactBoook.Contact
+
+@{
+    ViewBag.Title = "ContactD etails";
+}
+
+@* I will mofdify this html for make it responsive, it is optional *@
+
+<h2>Contact Details</h2>
+
+<div class="row">
+    <div class="col-lg-6">
+        <table class="table table-responsive table-bordered">
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.ContactFirstName)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(model => model.ContactFirstName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.ContactLastName)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(model => model.ContactLastName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Email)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(model => model.Email)
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Phone1)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(model => model.Phone1)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Phone2)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(model => model.Phone2)
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Address)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(model => model.Address)
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Country.CountryName)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(model => model.CountryName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.State.StateName)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(model => model.StateName)
+                </td>
+            </tr>
+            @* In the same way i will add all *@
+        </table>
+    </div>
+    <div class="col-lg-6">
+
+        <div style="display:@(string.IsNullOrEmpty(Model.Image)?"none":"block")">
+            &nbsp;
+            <img src="/img/@Model.Image" alt="image" style="width:100%; max-width:300px" />
+        </div>
+    </div>
+</div>
+
+@*<p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.ContactId }, new { })
+        @Html.ActionLink("Back to List", "Index")
+    </p>*@

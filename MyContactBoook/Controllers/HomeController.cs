@@ -151,6 +151,44 @@ namespace MyContactBoook.Controllers
 
         }
 
+        public ActionResult View(int id)
+        {
+            Contact c = GetContact(id);
+
+
+            return View(c);
+        }
+
+        private Contact GetContact(int contactId)
+        {
+            Contact contact = null;
+
+            using (MyContact db = new MyContact())
+            {
+                var v = (
+                             from  a in db.Contacts
+                             join  b in db.Countries on a.CountryId  equals b.CountryId
+                             join  c in db.States on a.StateId equals c.StateId
+                             where a.ContactId.Equals(contactId)
+                             select new
+                             {
+                                 a,
+                                 b.CountryName,
+                                 c.StateName
+                             } 
+                         ).FirstOrDefault();
+
+                if (v != null)
+                {
+                    contact = v.a;
+                    contact.CountryName = v.CountryName;
+                    contact.StateName = v.StateName;
+                }
+            }
+
+            return contact;
+           
+        }
 
         public JsonResult GetStates(int countryId)
         {

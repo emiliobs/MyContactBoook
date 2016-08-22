@@ -1,0 +1,34 @@
+﻿@model List<MyContactBoook.Models.ContactModel>
+
+@{
+    ViewBag.Title = "Export";
+
+    var grid = new WebGrid(source:Model, canPage: true, canSort:true, rowsPerPage:5);
+}
+
+
+
+<h2>Export</h2>
+<div class="overflow_auto">
+    @grid.GetHtml(
+
+        tableStyle:"table table-responsive",
+        columns: grid.Columns(
+
+                grid.Column("ContactId","Contact Id"),
+                grid.Column("FirstName", "First Name"),
+                grid.Column("LastName", "Last Name"),
+                grid.Column("Phone1", "Phone 1"),
+                grid.Column("Phone2", "Phone 2"),
+                grid.Column("Email","E-Mail")
+
+            )
+
+    )
+</div>
+<div>
+    @using (Html.BeginForm())
+    {
+        <input type="submit"  value="Export" class="bnt btn-primary" />
+    }
+</div>

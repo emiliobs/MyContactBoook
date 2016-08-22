@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 
 namespace MyContactBoook.Controllers
@@ -366,6 +367,88 @@ namespace MyContactBoook.Controllers
             }
 
            
+        }
+
+        //Export to Excel:
+
+        public ActionResult Export()
+        {
+            List<ContactModel> AllContacts = new List<ContactModel>();
+            using (MyContact db = new MyContact ())
+            {
+                var v = (
+                            from a in db.Contacts
+                            join b in db.Countries on a.CountryId equals b.CountryId
+                            join c in db.States on a.StateId equals c.StateId
+
+                            select new ContactModel
+                            {
+                                ContactId = a.ContactId,
+                                Address = a.Address,
+                                Country = b.CountryName,
+                                Email = a.Email,
+                                FirstName = a.ContactFirstName,
+                                LastName = a.ContactLastName,
+                                Phone1 = a.Phone1,
+                                Phone2 = a.Phone2,
+                                State = c.StateName,
+                                Image = a.Image
+                            }
+                        ).ToList();
+                AllContacts = v;
+            }
+
+            return View(AllContacts);
+        }
+
+        [HttpPost]
+        [ActionName("Export")]
+        public ActionResult ExportData()
+        {
+            List<ContactModel> AllContacts = new List<ContactModel>();
+            using (MyContact db = new MyContact())
+            {
+                var v = (
+                            from a in db.Contacts
+                            join b in db.Countries on a.CountryId equals b.CountryId
+                            join c in db.States on a.StateId equals c.StateId
+
+                            select new ContactModel
+                            {
+                                ContactId = a.ContactId,
+                                Address = a.Address,
+                                Country = b.CountryName,
+                                Email = a.Email,
+                                FirstName = a.ContactFirstName,
+                                LastName = a.ContactLastName,
+                                Phone1 = a.Phone1,
+                                Phone2 = a.Phone2,
+                                State = c.StateName,
+                                Image = a.Image
+                            }
+                        ).ToList();
+                AllContacts = v;
+            }
+
+            var grid = new WebGrid(source: AllContacts, canPage: false, canSort: true, rowsPerPage: 5);
+
+            string exportData = grid.GetHtml(
+                                    
+                                              columns: grid.Columns
+                                              (
+
+                                                        grid.Column("ContactId", "Contact Id"),
+                                                        grid.Column("FirstName", "First Name"),
+                                                        grid.Column("LastName", "Last Name"),
+                                                        grid.Column("Phone1", "Phone 1"),
+                                                        grid.Column("Phone2", "Phone 2"),
+                                                        grid.Column("Email", "E-Mail")
+
+                                             )
+
+                                  ).ToHtmlString();
+
+            return File(new System.Text.UTF8Encoding().GetBytes(exportData),"application/vnd.ms-excel","Contacts.xls");
         }
 
         

@@ -90,12 +90,16 @@
         </table>
     </div>
     <div class="col-lg-6">
-
         <div style="display:@(string.IsNullOrEmpty(Model.Image)?"none":"block")">
             &nbsp;
             <img src="/img/@Model.Image" alt="image" style="width:100%; max-width:300px" />
         </div>
     </div>
+    @*<div class="form-group">
+        <div class="col-md-offset-2 col-md-10">           
+            @Html.ActionLink("Back to List", "Index", new { }, new { @class = "btn btn-warning" })
+        </div>
+    </div>*@
 </div>
 
 @*<p>

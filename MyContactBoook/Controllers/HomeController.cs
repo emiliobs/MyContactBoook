@@ -39,8 +39,7 @@ namespace MyContactBoook.Controllers
             return View(contacts);
         }
 
-        [HttpGet]
-      
+        [HttpGet]      
         public ActionResult Add()
         {
             List<Country> AllCountry = new List<Country>();
@@ -109,7 +108,6 @@ namespace MyContactBoook.Controllers
                     ModelState.AddModelError("FileErrorMessage", "Only .png , .gif and .jpg");
                 }
 
-
             }
 
 
@@ -157,6 +155,132 @@ namespace MyContactBoook.Controllers
 
 
             return View(c);
+        }
+
+        //Now Edit Part:
+     
+        public ActionResult Edit(int id)
+        {
+            //Fecht Contact:
+            Contact contact = GetContact(id);//GetContact i hevr created in the previous part:
+            if (contact == null)
+            {
+                return HttpNotFound("Contact Not Found.!!!");
+            }
+            //fetch Country & state
+            List<Country> countries = new List<Country>();
+            List<State> states = new List<State>();
+
+            using (MyContact db = new MyContact ())
+            {
+                countries = db.Countries.OrderBy(c => c.CountryName).ToList();
+                states = db.States.Where(s=>s.CountryId.Equals(contact.CountryId)).OrderBy(s=>s.StateName).ToList();
+
+            }
+
+            ViewBag.Country = new SelectList(countries,"CountryId","CountryName", contact.CountryId);
+            ViewBag.State = new SelectList(states,"StateId","StateName",contact.StateId);
+
+            return View(contact);
+
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(Contact c, HttpPostedFileBase file)
+        {
+            //fetch country & state for dropdown:
+            List<Country> contries = new List<Country>();
+            List<State> states = new List<State>();
+
+            using (MyContact db = new MyContact ())
+            {
+                contries = db.Countries.Where(a=>a.CountryId.Equals(c.CountryId)).OrderBy(a=>a.CountryName).ToList();
+
+                if (c.CountryId > 0)
+                {
+                    states = db.States.Where(a=>a.CountryId.Equals(c.CountryId)).OrderBy(a=>a.StateName).ToList();
+                }
+
+                ViewBag.Country = new SelectList(contries,"CountryId","CountryName",c.CountryId);
+                ViewBag.State = new SelectList(states,"StateId","StateName",c.StateId);
+            }
+
+            //Validate file is selected:
+            if (file != null)
+            {
+                //if (file.ContentLength > (512 * 100))//512 bb
+                //{
+                //    ModelState.AddModelError("FileErrorMessage","File size must be within 512KB");
+                //}
+
+                string[] allowedType = new string[] { "image/png", "image/jpg", "image/gif","image/jpeg" };
+                bool isFileTypeValid = false;
+
+                foreach (var i in allowedType)
+                {
+                    if (file.ContentType == i.ToString())
+                    {
+                        isFileTypeValid = true;
+                        break;
+                    }
+                }
+
+                if (!isFileTypeValid)
+                {
+                    ModelState.AddModelError("FileErrorMessage","Only .png, .gif and .jpg file allowed.");
+                }
+
+            }
+
+            //Update contact:
+            if (ModelState.IsValid)
+            {
+                if (file != null)
+                {
+                    string savePath = Server.MapPath("~/img");
+                    string fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    file.SaveAs(Path.Combine(savePath, fileName));
+                    c.Image = fileName;
+                }
+
+                using (MyContact db = new MyContact ())
+                {
+                    var v = db.Contacts.Where(a => a.ContactId.Equals(c.ContactId)).FirstOrDefault();
+
+                    if (v != null)
+                    {
+                        v.ContactFirstName = c.;
+                        v.ContactLastName = c.ContactLastName;
+                        v.Address = c.Address;
+                        v.CountryId = c.CountryId;
+                        v.StateId = c.StateId;
+                        v.Phone1 = c.Phone1;
+                        v.Phone2 = c.Phone2;
+                        v.Email = c.Email;
+
+                        if (file != null)
+                        {
+                            v.Image = c.Image;
+                        }
+                    }
+
+                    
+                        db.SaveChanges();
+                        
+                  
+                }
+
+                return RedirectToAction("Index");
+               
+            }
+            else
+            {
+                return View(c);
+            }
+
+           
         }
 
         private Contact GetContact(int contactId)

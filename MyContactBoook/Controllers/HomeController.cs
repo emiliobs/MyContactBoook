@@ -251,7 +251,7 @@ namespace MyContactBoook.Controllers
 
                     if (v != null)
                     {
-                        v.ContactFirstName = c.;
+                        v.ContactFirstName = c.ContactFirstName;
                         v.ContactLastName = c.ContactLastName;
                         v.Address = c.Address;
                         v.CountryId = c.CountryId;
@@ -281,6 +281,46 @@ namespace MyContactBoook.Controllers
             }
 
            
+        }
+
+
+       [HttpGet]
+        public ActionResult Delete(int id)
+        {
+            //fetch Contact
+            Contact contact = GetContact(id);//getcontact is a funcion for get data i have written in the previous part:
+
+
+            return View(contact);
+        }
+
+        //delete post:
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Delete")]//here action name is required as we can not make signature for get & post
+        public ActionResult DeleteConfirm(int id)
+        {
+
+            using (MyContact db = new MyContactBoook.MyContact ())
+            {
+                var contact = db.Contacts.Where(a=>a.ContactId.Equals(id)).FirstOrDefault();
+
+                if (contact != null)
+                {
+                    db.Contacts.Remove(contact);
+
+                    db.SaveChanges();
+
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+
+                    return HttpNotFound("Contact Not Found.!!");
+                }
+            }
+
+            
         }
 
         private Contact GetContact(int contactId)
